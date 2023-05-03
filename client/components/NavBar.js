@@ -5,13 +5,12 @@ import {
   SettingOutlined,
 } from "@ant-design/icons";
 import { Menu } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 const items = [
   {
-    label: "CMS",
+    label: <Link href="/">CMS</Link>,
     key: "logo",
-    href: "/",
     style: { fontWeight: "bold", fontSize: "1.8em" },
   },
   {
@@ -26,30 +25,29 @@ const items = [
   },
   {
     label: "Dashboard",
-    key: "Dashboard",
+    key: "dashboard",
     style: { marginLeft: "auto" },
     children: [
       {
         type: "group",
         label: "Management",
-        children: [{ label: "admin", key: "admin" }],
+        children: [{ label: <Link href="/admin">Admin</Link>, key: "admin" }],
       },
     ],
   },
   {
     label: "Settings",
-    key: "Settings",
+    key: "settings",
     icon: (
       <SettingOutlined
         style={{
-          fontSize: "1.4em",
+          fontSize: "1.2em",
         }}
       />
     ),
-
     children: [
       {
-        label: "Mode",
+        label: `Mode : Dark`,
         key: "mode",
         icon: <RocketOutlined />,
       },
@@ -64,21 +62,31 @@ const items = [
 
 const NavBar = () => {
   const [current, setCurrent] = useState("mail");
+  useEffect(() => {
+    if (!localStorage.getItem("currentPathKey")) {
+      localStorage.setItem("currentPathKey", "logo");
+    } else {
+      setCurrent(localStorage.getItem("currentPathKey"));
+    }
+  }, []);
   const onClick = (e) => {
-    console.log("click ", e);
-    setCurrent(e.key);
+    if (e.key !== "mode" && e.key !== "logout") {
+      console.log("here");
+      localStorage.setItem("currentPathKey", e.key);
+      setCurrent(e.key);
+    }
   };
+  console.log(current);
   return (
     <Menu
       onClick={onClick}
       mode="horizontal"
       style={{
-        color: "#1677ff",
         fontSize: "16px",
-        borderBottom: "1px solid #1677ff",
       }}
       triggerSubMenuAction="click"
       items={items}
+      selectedKeys={[current]}
     ></Menu>
   );
 };
